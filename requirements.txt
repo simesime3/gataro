@@ -1,6 +1,5 @@
 streamlit
 datetime
-os
 googlemaps
 pandas
 load_dotenv
