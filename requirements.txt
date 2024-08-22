@@ -3,3 +3,8 @@ datetime
 googlemaps
 pandas
 load_dotenv
+streamlit_folium
+openai
+folium
+collections
+streamlit_folium
