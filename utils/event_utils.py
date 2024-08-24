@@ -2,9 +2,9 @@ import streamlit as st
 
 options = {
     "会社の固い宴会": {"description": "正式な会社の宴会", "image": "./img/item01.png"},
-    "会社の同僚との気さくな宴会": {"description": "同僚と楽しく過ごす宴会", "image": "./img/image2.png"},
-    "合コン": {"description": "新しい出会いの場", "image": "./img/image3.png"},
-    "友人との遊び": {"description": "友人と気軽に楽しむ", "image": "./img/image4.png"},
+    "会社の同僚と宴会": {"description": "同僚と楽しく飲む", "image": "./img/item02.png"},
+    "合コン": {"description": "新しい出会いの場", "image": "./img/item03.png"},
+    "友人との遊び": {"description": "友人と気軽に楽しむ", "image": "./img/item07.png"},
 }
 
 def custom_select(label, options):

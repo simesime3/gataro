@@ -3,7 +3,6 @@ import googlemaps
 import pandas as pd
 import datetime
 import openai
-import openai
 import folium
 from streamlit_folium import folium_static
 from collections import Counter
@@ -38,15 +37,15 @@ def custom_select(label, options):
             if st.button(f"{key}", key=f"{key}_btn"):
                 selected_value = key
                 st.session_state.selected_event = key
+            
             # 選択されているかどうかを判定してCSSクラスを適用
             selected_class = "selected" if key == selected_value else ""
-            st.markdown(f"""
-                <div class="select-img {selected_class}">
-                    <img src="{value['image']}" alt="{key}">
-                    <div>{key}</div>
-                    <div style="font-size:small;">{value['description']}</div>
-                </div>
-                """, unsafe_allow_html=True)
+
+            # Streamlitの画像表示を使用
+            st.image(value['image'], caption=key, use_column_width=True)
+            st.write(f"**{key}**")
+            st.write(value['description'])
+    # st.image("./img/item01.png", caption="Test Image", use_column_width=True)
 
     return selected_value
 
