@@ -27,31 +27,10 @@ if "dates" not in st.session_state:
 if "members" not in st.session_state:
     st.session_state.members = []
 
-# 選択肢を表示する関数
-def custom_select(label, options):
-    selected_value = st.session_state.selected_event
-    cols = st.columns(len(options))
-
-    for i, (key, value) in enumerate(options.items()):
-        with cols[i]:
-            if st.button(f"{key}", key=f"{key}_btn"):
-                selected_value = key
-                st.session_state.selected_event = key
-            
-            # 選択されているかどうかを判定してCSSクラスを適用
-            selected_class = "selected" if key == selected_value else ""
-
-            # Streamlitの画像表示を使用
-            st.image(value['image'], caption=key, use_column_width=True)
-            st.write(f"**{key}**")
-            st.write(value['description'])
-    # st.image("./img/item01.png", caption="Test Image", use_column_width=True)
-
-    return selected_value
-
 # サイドバーでナビゲーションメニューを作成
 st.sidebar.title("メニュー")
 section = st.sidebar.radio("セクションを選択してください", ["幹事の設定", "メンバーの入力", "結果の確認"])
+
 
 # 幹事の設定セクション
 if section == "幹事の設定":
