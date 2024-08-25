@@ -265,20 +265,90 @@ if section == "結果の確認" and 'optimal_date' in st.session_state:
             st.write(f"おすすめ理由: {recommendation_reason}")
 
             if st.button("LINEで送信するメッセージを見る"):
+                from openai import OpenAI # openAIのchatGPTのAIを活用するための機能をインポート
+                import os # OSが持つ環境変数OPENAI_API_KEYにAPIを入力するためにosにアクセスするためのライブラリをインポート
+                openai.api_key = os.getenv("OPENAI_API_KEY")
+                client = OpenAI()# openAIの機能をclientに代入
+
+                # 関数: 事前連絡文を生成する
+                def generate_event_notice(purpose, date, selected_place_name, recommendation_reason, weather_info):
+                    prompt = f"""
+                    イベントの目的: {purpose}
+                    開催年月日: {date}
+                    開催する店舗: {selected_place_name}
+                    店舗のおすすめ理由: {recommendation_reason}
+                    当日の天気：{weather_info}
+                    上記の情報を必ず入れて、参加が確定した参加者向けの事前連絡文を日本人好みのジョークを交えて150文字以内で作成してください。1行に表示できる文字数が全角で50文字なので、3行から4行で表示できるよう改行も入れてください。なお、日時・会場情報は別途明記するのでここでは明記しなくてよいです。
+                    """
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "user", "content": prompt},
+                        ]
+                    )
+                    # 生成されたテキストを取得
+                    event_notice = response.choices[0].message.content
+                    return event_notice.strip()
+                
+                # イベント情報の入力
+                purpose = st.session_state.event_type
+                date = st.session_state.optimal_date.strftime('%m-%d')
+                shop_place = st.session_state.address
+                phone_num = st.session_state.phone_number
+                venue_url = selected_place['url']
+                weather_info = "雨" # weather_forecast_message
+
+                # 事前連絡文を生成
+                notice_text = generate_event_notice(purpose, date, selected_place_name, recommendation_reason, weather_info)
+
                 line_message = (
-                    f"次回の{st.session_state.event_type}は、{st.session_state.optimal_date.strftime('%Y-%m')}の19:00から「{selected_place_name}」のお店で行います。\n"
-                    f"住所: {st.session_state.address}\n"
-                    f"電話番号: {st.session_state.phone_number}\n"
-                    f"公式サイト: {selected_place['url']}\n"
-                    # f"当日の天気: {weather_forecast_message}\n"
-                    f"おすすめ理由: {recommendation_reason}\n"
-                    "当日楽しみにしております！"
+                    f"{notice_text}\n"
+                    f"\n"
+                    f"開催日: {date} 19:00\n"
+                    f"会場: {selected_place_name}\n"
+                    f"住所: {shop_place}\n"
+                    f"電話番号: {phone_num}\n"
+                    f"公式サイト: {venue_url}\n"
                 )
                 st.write("LINEで送信するメッセージ:")
                 st.code(line_message)
 
     # ゲーム提案のボタンをLINEメッセージの後に配置
     if st.button("ゲームを提案してもらう"):
-        game_suggestion = suggest_game(st.session_state.event_type)
-        st.write
+        from openai import OpenAI # openAIのchatGPTのAIを活用するための機能をインポート
+        import os # OSが持つ環境変数OPENAI_API_KEYにAPIを入力するためにosにアクセスするためのライブラリをインポート
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        client = OpenAI()# openAIの機能をclientに代入
+        # ChatGPTにゲームを提案させる関数
+        try:
+            def suggest_game(purpose, weather_info):
+                prompt = f"""
+                イベントの目的: {purpose}
+                当日の天気：{weather_info}
+                上記の情報を考慮して、飲み会の幹事として参加者を楽しませるゲームを3つ提案してください。1行に表示できる文字数が全角で50文字なので改行も入れてください。
+                """
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "user", "content": prompt},
+                    ]
+                )
+
+                # 生成されたテキストを取得
+                suggest_game = response.choices[0].message.content
+                return suggest_game.strip()
+
+                # イベント情報の入力
+            purpose = st.session_state.event_type
+            weather_info = "雨" # weather_forecast_message
+
+                # 事前連絡文を生成
+            game_text = suggest_game(purpose, weather_info)
+
+            st.write("ゲームの提案:")
+            st.code(game_text)
+
+        except Exception as e:
+            st.write(f"エラーが発生しました: {e}")
+
 
